@@ -30,24 +30,43 @@ function getDevMenuHint() {
   );
 }
 
-export default function Newgame() {
-    const router= useRouter()
+export default function Modify() {
+    const router=useRouter()
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
           <ThemedText type="title" style={styles.title}>
-            Nouveau match
+            Modifier joueur
           </ThemedText>
         </ThemedView>
         <Button
-                      title="Accueil"
+                      title="Retour"
                       color="#00BCE2"
-                      onPress={()=>router.push('/')}
+                      onPress={()=>router.push('/joueurs')}
                   />
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
-
+          <Button
+              title="Nouveau match"
+              color="#00BCE2"
+          />
+          <Button
+              title="Historique match"
+              color="#00BCE2"
+          />
+          <Button
+              title="Joueurs"
+              color="#00BCE2"
+          />
+          <Button
+              title="Stats joueurs"
+              color="#00BCE2"
+          />
+          <Button
+              title="Ajouter joueurs"
+              color="#00BCE2"
+          />
         </ThemedView>
       </SafeAreaView>
     </ThemedView>

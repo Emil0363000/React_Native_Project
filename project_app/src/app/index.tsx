@@ -1,6 +1,7 @@
 import * as Device from 'expo-device';
 import {Button, Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {useRouter} from 'expo-router';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
@@ -30,6 +31,7 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const router=useRouter();
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -43,22 +45,17 @@ export default function HomeScreen() {
           <Button
               title="Nouveau match"
               color="#00BCE2"
+              onPress={()=>router.push('/nouveau_match')}
           />
           <Button
               title="Historique match"
               color="#00BCE2"
+              onPress={()=>router.push('/historique_match')}
           />
           <Button
               title="Joueurs"
               color="#00BCE2"
-          />
-          <Button
-              title="Stats joueurs"
-              color="#00BCE2"
-          />
-          <Button
-              title="Ajouter joueurs"
-              color="#00BCE2"
+              onPress={()=>router.push('/joueurs')}
           />
         </ThemedView>
       </SafeAreaView>

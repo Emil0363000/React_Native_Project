@@ -11,6 +11,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 
 
+
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
     return <ThemedText type="small">use browser devtools</ThemedText>;
@@ -30,24 +31,23 @@ function getDevMenuHint() {
   );
 }
 
-export default function Newgame() {
-    const router= useRouter()
+export default function Create() {
+    const router=useRouter()
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
           <ThemedText type="title" style={styles.title}>
-            Nouveau match
+            Création un joueur
           </ThemedText>
         </ThemedView>
         <Button
-                      title="Accueil"
+                      title="Retour"
                       color="#00BCE2"
-                      onPress={()=>router.push('/')}
+                      onPress={()=>router.push('/joueurs')}
                   />
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
-
         </ThemedView>
       </SafeAreaView>
     </ThemedView>
