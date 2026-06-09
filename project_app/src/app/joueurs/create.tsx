@@ -1,91 +1,53 @@
-import * as Device from 'expo-device';
-import {Button, Platform, StyleSheet } from 'react-native';
+import { Button, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { PlayerForm } from '@/components/PlayerForm';
 
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { useCreatePlayer } from '@/hooks/usePlayer';
+import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 export default function Create() {
-    const router=useRouter()
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <ThemedText type="title" style={styles.title}>
-            Création un joueur
-          </ThemedText>
-        </ThemedView>
-        <Button
-                      title="Retour"
-                      color="#00BCE2"
-                      onPress={()=>router.push('/joueurs')}
-                  />
+  const router = useRouter();
+  const createPlayer = useCreatePlayer();
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-        </ThemedView>
+  const handleSubmit = async (data: any) => {
+    try {
+      await createPlayer.mutateAsync(data);
+
+      Alert.alert('Succès', 'Joueur créé');
+
+      router.replace('/joueurs');
+    } catch (e) {
+      Alert.alert('Erreur', 'Impossible de créer le joueur');
+    }
+  };
+
+  return (
+    <ThemedView style={{ flex: 1 }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          maxWidth: MaxContentWidth,
+          alignSelf: 'center',
+          width: '100%',
+          padding: Spacing.four,
+          paddingBottom: BottomTabInset,
+        }}
+      >
+        <ThemedText type="title" style={{ textAlign: 'center' }}>
+          Création joueur
+        </ThemedText>
+
+        <PlayerForm
+          onSubmit={handleSubmit}
+          loading={createPlayer.isPending}
+        />
+
+        <Button title="Retour" onPress={() => router.back()} />
       </SafeAreaView>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});

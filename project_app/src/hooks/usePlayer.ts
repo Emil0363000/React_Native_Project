@@ -1,85 +1,25 @@
 // hooks/usePosts.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
-  query, orderBy
-} from 'firebase/firestore'
-import { db } from '../lib/firebase'
+import { getPlayers,getPlayer, createPlayer,updatePlayer, deletePlayer } from '../../lib/players.service'
+import { db } from '../../lib/firebase'
 
-type Player = {
-  id: string
-  name : string
-  firstname: string
-  taille: Int16Array
-  poids: Int16Array
-  poste: string
-  age: Int16Array 
-}
 
-type CreatePlayerInput = {
-  name : string
-  firstname: string
-  taille: Int16Array
-  poids: Int16Array
-  poste: string
-  age: Int16Array 
-}
-
-const postsRef = collection(db, 'posts')
-
-// --- Fonctions Firestore ---
-
-async function fetchPlayers(): Promise<Player[]> {
-  const q = query(postsRef, orderBy('createdAt', 'desc'))
-  const snapshot = await getDocs(q)
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  })) as Player[]
-}
-
-async function fetchPlayer(id: string): Promise<Player> {
-  const snap = await getDoc(doc(db, 'posts', id))
-  if (!snap.exists()) throw new Error('Player introuvable')
-  return { id: snap.id, ...snap.data() } as Player
-}
-
-async function createPlayer(data: CreatePlayerInput): Promise<string> {
-  const docRef = await addDoc(postsRef, {
-    ...data,
-    createdAt: new Date()
-  })
-  return docRef.id
-}
-
-async function updatePlayer({ id, ...data }: Partial<Player> & { id: string }) {
-  await updateDoc(doc(db, 'posts', id), {
-    ...data,
-    updatedAt: new Date()
-  })
-}
-
-async function removePlayer(id: string) {
-  await deleteDoc(doc(db, 'posts', id))
-}
-
-// --- Hooks TanStack Query ---
 
 export function usePlayers() {
   return useQuery({
     queryKey: ['players'],
-    queryFn: fetchPlayers,
+    queryFn: getPlayers,
   })
 }
 
 export function usePlayer(id: string) {
   return useQuery({
     queryKey: ['player', id],
-    queryFn: () => fetchPlayer(id),
+    queryFn: () => getPlayer(id),
   })
 }
 
-export function useCreatePost() {
+export function useCreatePlayer() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -90,7 +30,7 @@ export function useCreatePost() {
   })
 }
 
-export function useUpdatePost() {
+export function useUpdatePlayer() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -106,7 +46,7 @@ export function useDeletePlayer() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: removePlayer,
+    mutationFn: deletePlayer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['players'] })
     },
