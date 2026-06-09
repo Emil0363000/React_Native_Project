@@ -1,110 +1,225 @@
-import * as Device from 'expo-device';
-import {Button, Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState, useEffect } from "react";
+import { View, Text, TextInput, Pressable, Alert, StyleSheet, ActivityIndicator } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { usePlayer, useUpdatePlayer } from "@/hooks/usePlayer";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useRouter } from 'expo-router';
+export default function EditPlayerScreen() {
+  const { id } = useLocalSearchParams();
+  const { data: player, isLoading } = usePlayer(id as string);
+  const updateMutation = useUpdatePlayer();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [position, setPosition] = useState("");
+  const [age, setAge] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
 
+  useEffect(() => {
+    if (!player) return;
+    setFirstName(player.firstName);
+    setLastName(player.lastName);
+    setPosition(player.position);
+    setAge(player.age.toString());
+    setHeight(player.height.toString());
+    setWeight(player.weight.toString());
+  }, [player]);
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+  async function handleSave() {
+    try {
+      await updateMutation.mutateAsync({
+        id: id as string,
+
+        firstName,
+        lastName,
+        position,
+
+        age: Number(age),
+        height: Number(height),
+        weight: Number(weight),
+});
+      
+
+      router.replace("/joueurs");
+    } catch {
+      Alert.alert(
+        "Erreur",
+        "Impossible de modifier le joueur"
+      );
+    }
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
+
+  if (isLoading) {
+    return <ActivityIndicator />;
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
 
-export default function Modify() {
-    const router=useRouter()
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <ThemedText type="title" style={styles.title}>
-            Modifier joueur
-          </ThemedText>
-        </ThemedView>
-        <Button
-                      title="Retour"
-                      color="#00BCE2"
-                      onPress={()=>router.push('/joueurs')}
-                  />
+ return (
+    <View style={styles.container}>
+      <Text style={styles.title}>
+        Modifier le joueur
+      </Text>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <Button
-              title="Nouveau match"
-              color="#00BCE2"
-          />
-          <Button
-              title="Historique match"
-              color="#00BCE2"
-          />
-          <Button
-              title="Joueurs"
-              color="#00BCE2"
-          />
-          <Button
-              title="Stats joueurs"
-              color="#00BCE2"
-          />
-          <Button
-              title="Ajouter joueurs"
-              color="#00BCE2"
-          />
-        </ThemedView>
-      </SafeAreaView>
-    </ThemedView>
+      <TextInput
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholder="Prénom"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder="Nom"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={position}
+        onChangeText={setPosition}
+        placeholder="Poste"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+        placeholder="Age"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={height}
+        onChangeText={setHeight}
+        keyboardType="numeric"
+        placeholder="Taille"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={weight}
+        onChangeText={setWeight}
+        keyboardType="numeric"
+        placeholder="Poids"
+        style={styles.input}
+      />
+
+      <Pressable
+        style={styles.button}
+        onPress={handleSave}
+      >
+        <Text style={styles.buttonText}>
+          Sauvegarder
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    padding: 16,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+
+   button: {
+    backgroundColor: "#00BCD4",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+   buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  
+  page: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    backgroundColor: "#ffffff",
+    paddingTop: 12,
+  },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 16,
+    marginBottom: 4,
+  },
+  addBtn: {
+    backgroundColor: "#d0d0d0",
+    borderRadius: 4,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  addBtnText: {
+    fontSize: 15,
+    color: "#222",
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
+    fontSize: 22,
+    fontWeight: "400",
+    marginVertical: 16,
+    color: "#000",
   },
-  code: {
-    textTransform: 'uppercase',
+  list: {
+    gap: 14,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  playerBtn: {
+    backgroundColor: "#00bcd4",
+    borderRadius: 4,
+    paddingVertical: 18,
+    alignItems: "center",
+  },
+  playerText: {
+    color: "#fff",
+    fontSize: 17,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modal: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 24,
+    gap: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#111",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    padding: 12,
+    fontSize: 15,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 12,
+    alignItems: "center",
+  },
+  cancelBtn: {
+    fontSize: 15,
+    color: "#666",
+    padding: 8,
+  },
+  confirmBtn: {
+    backgroundColor: "#00bcd4",
+    borderRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  confirmBtnText: {
+    fontSize: 15,
+    color: "#fff",
+    fontWeight: "500",
   },
 });

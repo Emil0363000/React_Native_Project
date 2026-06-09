@@ -1,76 +1,61 @@
-import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Modal,
-  TextInput,
-} from "react-native";
-import { Button } from "react-native";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { router } from "expo-router";
+import { useDeletePlayer, usePlayers } from "@/hooks/usePlayer";
+import { deletePlayer } from "../../../lib/players.service";
 
-type Player = {
-  id: number;
-  name: string;
-};
+export default function PlayersScreen(){
+  const {data: players, isLoading} = usePlayers();
 
-const mockPlayers: Player[] = [
-  { id: 1, name: "LEBRON James" },
-  { id: 2, name: "Jeffrey Epstein" },
-  { id: 3, name: "Patrick Bruel" },
-  { id: 4, name: "P.DIDDY" },
-  { id: 5, name: "Pierre Palmade" },
-  { id: 6, name: "CRI-Staline" },
-];
+  const deleteMutation= useDeletePlayer();
 
-export default function ListeJoueur() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newName, setNewName] = useState("");
-
-  useEffect(() => {
-    // BDD
-    setPlayers(mockPlayers);
-  }, []);
-
-  function handleAdd() {
-    if (!newName.trim()) return;
-    setPlayers((prev) => [
-      ...prev,
-      { id: prev.length + 1, name: newName.trim() },
-    ]);
-    setNewName("");
-    setShowModal(false);
-  }
-  const router=useRouter()
+ 
 
   return (
     <View style={styles.page}>
-      <View style={styles.topBar}>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity style={styles.addBtn} onPress={() => setShowModal(true)}>
-          <Text style={styles.addBtnText} 
-          onPress={()=>router.push('/joueurs/create')}>Ajouter</Text>
-        </TouchableOpacity>
-      </View>
-      <Button
-                    title="Accueil"
-                    color="#00BCE2"
-                    onPress={()=>router.push('/')}
-                />
-
-      <Text style={styles.title}>Liste des joueurs</Text>
+      <Pressable onPress={()=> router.push("/joueurs/create")}>
+        <Text>Ajouter un joueur</Text>
+      </Pressable>
 
       <FlatList
         data={players}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.playerBtn}>
-            <Text style={styles.playerText}>{item.name}</Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              borderWidth: 1,
+              padding: 12,
+              marginVertical: 8,
+            }}
+          >
+            <Text>
+              {item.firstName} {item.lastName}
+            </Text>
+
+
+            <Pressable
+              onPress={() =>
+                router.push(`/joueurs/stats/${item.id}`)
+              }
+            >
+              <Text>Voir</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() =>
+                router.push(`/joueurs/edit/${item.id}`)
+              }
+            >
+              <Text>Modifier</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() =>
+                deleteMutation.mutate(item.id)
+              }
+            >
+              <Text>Supprimer</Text>
+            </Pressable>
+          </View>
         )}
       />
     </View>
