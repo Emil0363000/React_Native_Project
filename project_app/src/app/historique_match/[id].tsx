@@ -1,148 +1,154 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
- 
-type Equipe = {
-  id: number;
-  nom: string;
-  matchs: number;
-  victoires: number;
-  defaites: number;
-  nuls: number;
-  total_saison: number;
-};
- 
-const mockEquipes: Equipe[] = [
-  {
-    id: 1,
-    nom: "Equipe de Bauvais",
-    matchs: 35,
-    victoires: 27,
-    defaites: 5,
-    nuls: 3,
-    total_saison: 43,
-  },
-  {
-    id: 2,
-    nom: "Equipe de Paris",
-    matchs: 30,
-    victoires: 20,
-    defaites: 8,
-    nuls: 2,
-    total_saison: 43,
-  },
-];
- 
-export default function StatsEquipe() {
-  const [selected, setSelected] = useState<Equipe>(mockEquipes[0]);
- 
+import {View, Text, StyleSheet, ActivityIndicator, ScrollView,} from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { useGame } from "@/hooks/useGame";
+import { usePlayer } from "@/hooks/usePlayer";
+
+export default function MatchDetailsScreen() {
+  const { id } = useLocalSearchParams();
+  const { data: game, isLoading } = useGame(id as string);
+  const { data: player } = usePlayer(game?.playerId ?? "");
+  if (isLoading || !game) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  const points = game.stats.twoPtMade * 2 + game.stats.threePtMade * 3 + game.stats.ftMade;
+  const rebounds = game.stats.offRebounds + game.stats.defRebounds;
+
   return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Consultation stats{"\n"}équipes</Text>
- 
-      <View style={styles.equipeList}>
-        {mockEquipes.map((equipe) => (
-          <TouchableOpacity
-            key={equipe.id}
-            style={[
-              styles.equipeBtn,
-              selected.id === equipe.id && styles.equipeBtnActive,
-            ]}
-            onPress={() => setSelected(equipe)}
-          >
-            <Text
-              style={[
-                styles.equipeBtnText,
-                selected.id === equipe.id && styles.equipeBtnTextActive,
-              ]}
-            >
-              {equipe.nom}
-            </Text>
-          </TouchableOpacity>
-        ))}
+    <ScrollView style={styles.container} contentContainerStyle={{paddingBottom: 40,}}>
+      <Text style={styles.title}>
+        {player?.firstName}{" "}
+        {player?.lastName}
+      </Text>
+      <Text style={styles.subtitle}>
+        {game.team} vs {game.opponentTeam}
+      </Text>
+      <Text style={styles.score}>
+        Score final : {game.finalScore}
+      </Text>
+
+      <View style={styles.summary}>
+        <View style={styles.summaryCard}>
+          <Text style={styles.big}>
+            {points}
+          </Text>
+          <Text>PTS</Text>
+        </View>
+        <View style={styles.summaryCard}>
+          <Text style={styles.big}>
+            {rebounds}
+          </Text>
+          <Text>REB</Text>
+        </View>
+        <View style={styles.summaryCard}>
+          <Text style={styles.big}>
+            {game.stats.assists}
+          </Text>
+          <Text>AST</Text>
+        </View>
       </View>
- 
-      <View style={styles.statsBlock}>
-        <StatRow label="Nb matchs" value={selected.matchs} />
-        <StatRow label="Victoire" value={selected.victoires} />
-        <StatRow label="Défaite" value={selected.defaites} />
-        <StatRow label="Match nul" value={selected.nuls} />
-        <StatRow
-          label="Matchs restants"
-          value={selected.total_saison - selected.matchs}
-        />
-      </View>
+
+      <Text style={styles.section}>Tir</Text>
+      <StatRow label="2 pts marqués"value={game.stats.twoPtMade}/>
+      <StatRow label="2 pts ratés" value={game.stats.twoPtMissed}/>
+      <StatRow label="3 pts marqués"value={game.stats.threePtMade}/>
+      <StatRow label="3 pts ratés"value={game.stats.threePtMissed}/>
+      <StatRow label="LF marqués" value={game.stats.ftMade}/>
+      <StatRow label="LF ratés"value={game.stats.ftMissed}/>
+
+      <Text style={styles.section}>Rebonds</Text>
+      <StatRow label="Offensifs"value={game.stats.offRebounds}/>
+      <StatRow label="Défensifs"value={game.stats.defRebounds}/>
+
+      <Text style={styles.section}>Autres</Text>
+      <StatRow label="Passes" value={game.stats.assists} />
+      <StatRow label="Interceptions"value={game.stats.steals}/>
+      <StatRow label="Contres" value={game.stats.blocks}/>
+      <StatRow label="Pertes de balle" value={game.stats.turnovers}/>
+      <StatRow label="Fautes commises" value={game.stats.foulsCommitted}/>
+      <StatRow label="Fautes provoquées" value={game.stats.foulsDrawn}/>
     </ScrollView>
   );
 }
- 
-function StatRow({ label, value }: { label: string; value: number }) {
+
+function StatRow({label,value,}: {
+  label: string;
+  value: number;
+}) {
   return (
-    <View style={styles.statRow}>
-      <Text style={styles.statText}>
-        {label} : {value}
-      </Text>
+    <View style={styles.row}>
+      <Text>{label}</Text>
+      <Text>{value}</Text>
     </View>
   );
 }
- 
+
 const styles = StyleSheet.create({
-  page: {
+  container: {
     flex: 1,
-    backgroundColor: "#fff",
+    padding: 16,
   },
-  content: {
-    paddingTop: 32,
-    paddingHorizontal: 20,
-    paddingBottom: 60,
+
+  center: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
   },
+
   title: {
-    fontSize: 22,
-    fontWeight: "400",
-    textAlign: "center",
-    color: "#000",
-    marginBottom: 28,
-    lineHeight: 30,
-  },
-  equipeList: {
-    width: "100%",
-    gap: 12,
-    marginBottom: 36,
-  },
-  equipeBtn: {
-    backgroundColor: "#e0e0e0",
-    borderRadius: 4,
-    paddingVertical: 22,
-    alignItems: "center",
-  },
-  equipeBtnActive: {
-    backgroundColor: "#00bcd4",
-  },
-  equipeBtnText: {
-    fontSize: 17,
-    color: "#333",
+    fontSize: 26,
+    fontWeight: "700",
     textAlign: "center",
   },
-  equipeBtnTextActive: {
-    color: "#fff",
+
+  subtitle: {
+    textAlign: "center",
+    marginTop: 6,
   },
-  statsBlock: {
-    width: "100%",
-    gap: 14,
-    paddingLeft: 8,
-  },
-  statRow: {
-    paddingVertical: 2,
-  },
-  statText: {
+
+  score: {
+    textAlign: "center",
+    marginTop: 10,
     fontSize: 18,
-    color: "#000",
-    fontWeight: "400",
+    fontWeight: "600",
+  },
+
+  summary: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 20,
+  },
+
+  summaryCard: {
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: "#00BCD4",
+    minWidth: 90,
+  },
+
+  big: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "700",
+  },
+
+  section: {
+    marginTop: 20,
+    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
 });

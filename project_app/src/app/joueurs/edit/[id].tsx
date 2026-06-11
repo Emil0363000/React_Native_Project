@@ -28,17 +28,13 @@ export default function EditPlayerScreen() {
     try {
       await updateMutation.mutateAsync({
         id: id as string,
-
         firstName,
         lastName,
         position,
-
         age: Number(age),
         height: Number(height),
         weight: Number(weight),
 });
-      
-
       router.replace("/joueurs");
     } catch {
       Alert.alert(
@@ -47,66 +43,33 @@ export default function EditPlayerScreen() {
       );
     }
   }
-
   if (isLoading) {
     return <ActivityIndicator />;
   }
-
  return (
     <View style={styles.container}>
       <Text style={styles.title}>
         Modifier le joueur
       </Text>
+      <Text>Prénom</Text>
+      <TextInput value={firstName} onChangeText={setFirstName} placeholder="Prénom"style={styles.input}/>
 
-      <TextInput
-        value={firstName}
-        onChangeText={setFirstName}
-        placeholder="Prénom"
-        style={styles.input}
-      />
+      <Text>Nom</Text>
+      <TextInput value={lastName} onChangeText={setLastName}placeholder="Nom"style={styles.input}/>
 
-      <TextInput
-        value={lastName}
-        onChangeText={setLastName}
-        placeholder="Nom"
-        style={styles.input}
-      />
+      <Text>Poste</Text>
+      <TextInput value={position} onChangeText={setPosition}placeholder="Poste"style={styles.input}/>
 
-      <TextInput
-        value={position}
-        onChangeText={setPosition}
-        placeholder="Poste"
-        style={styles.input}
-      />
+      <Text>Age</Text>
+      <TextInput value={age}onChangeText={setAge}keyboardType="numeric"placeholder="Age"style={styles.input}/>
 
-      <TextInput
-        value={age}
-        onChangeText={setAge}
-        keyboardType="numeric"
-        placeholder="Age"
-        style={styles.input}
-      />
+      <Text>Taille en cm</Text>
+      <TextInput value={height} onChangeText={setHeight}keyboardType="numeric"placeholder="Taille en cm" style={styles.input}/>
 
-      <TextInput
-        value={height}
-        onChangeText={setHeight}
-        keyboardType="numeric"
-        placeholder="Taille"
-        style={styles.input}
-      />
+      <Text>Poids en kg</Text>
+      <TextInput value={weight} onChangeText={setWeight} keyboardType="numeric"placeholder="Poids en kg"style={styles.input}/>
 
-      <TextInput
-        value={weight}
-        onChangeText={setWeight}
-        keyboardType="numeric"
-        placeholder="Poids"
-        style={styles.input}
-      />
-
-      <Pressable
-        style={styles.button}
-        onPress={handleSave}
-      >
+      <Pressable style={styles.button} onPress={handleSave}>
         <Text style={styles.buttonText}>
           Sauvegarder
         </Text>

@@ -8,8 +8,6 @@ export default function PlayersScreen(){
 
   const deleteMutation= useDeletePlayer();
 
- 
-
   return (
     <View style={styles.page}>
       <Pressable onPress={()=> router.push("/joueurs/create")}>
@@ -20,39 +18,17 @@ export default function PlayersScreen(){
         data={players}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View
-            style={{
-              borderWidth: 1,
-              padding: 12,
-              marginVertical: 8,
-            }}
-          >
+          <View style={{ borderWidth: 1,padding: 12, marginVertical: 8,}}>
             <Text>
               {item.firstName} {item.lastName}
             </Text>
-
-
-            <Pressable
-              onPress={() =>
-                router.push(`/joueurs/stats/${item.id}`)
-              }
-            >
+            <Pressable onPress={() =>router.push(`/joueurs/stats/${item.id}`)}>
               <Text>Voir</Text>
             </Pressable>
-
-            <Pressable
-              onPress={() =>
-                router.push(`/joueurs/edit/${item.id}`)
-              }
-            >
+            <Pressable onPress={() => router.push(`/joueurs/edit/${item.id}`)}>
               <Text>Modifier</Text>
             </Pressable>
-
-            <Pressable
-              onPress={() =>
-                deleteMutation.mutate(item.id)
-              }
-            >
+            <Pressable onPress={() =>deleteMutation.mutate(item.id)}>
               <Text>Supprimer</Text>
             </Pressable>
           </View>

@@ -1,9 +1,6 @@
-// hooks/usePosts.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getGames,getGame,getGamesByPlayer,createGame,updateGame,deleteGame } from '../../lib/games.service'
 import { Game } from '../../types/game'
-import { db } from '../../lib/firebase'
-
 
 export function useGames() {
   return useQuery({
@@ -44,7 +41,6 @@ export function useUpdateGame() {
       id: string
       data: Partial<Game>
     }) => updateGame(id, data),
-
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['games'],

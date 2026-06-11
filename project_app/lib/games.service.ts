@@ -1,15 +1,4 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  updateDoc,
-} from "firebase/firestore";
-
+import {addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, updateDoc,} from "firebase/firestore";
 import { db } from "./firebase";
 import { Game } from "../types/game";
 

@@ -9,4 +9,3 @@ export interface Player {
     createdAt: string;
     updatedAt?:string;
 }
-

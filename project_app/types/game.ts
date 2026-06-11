@@ -23,7 +23,8 @@ export interface Game {
     season: string;
     level: string;
     finalScore:string;
-    stats:GameStats;
+    isFinished:boolean;
+    stats?:GameStats;
     createdAt:string;
 
 }

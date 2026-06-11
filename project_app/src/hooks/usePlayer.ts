@@ -1,8 +1,5 @@
-// hooks/usePosts.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPlayers,getPlayer, createPlayer,updatePlayer, deletePlayer } from '../../lib/players.service'
-import { db } from '../../lib/firebase'
-
 
 
 export function usePlayers() {
@@ -21,7 +18,6 @@ export function usePlayer(id: string) {
 
 export function useCreatePlayer() {
   const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: createPlayer,
     onSuccess: () => {
@@ -32,7 +28,6 @@ export function useCreatePlayer() {
 
 export function useUpdatePlayer() {
   const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: updatePlayer,
     onSuccess: (_, variables) => {

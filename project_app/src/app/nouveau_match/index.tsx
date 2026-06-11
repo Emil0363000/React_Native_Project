@@ -1,91 +1,187 @@
-import * as Device from 'expo-device';
-import {Button, Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from "react";
+import {View,Text,TextInput,Pressable,Alert,ScrollView,StyleSheet,} from "react-native";
+import { router } from "expo-router";
+import { usePlayers } from "@/hooks/usePlayer";
+import { useCreateGame } from "@/hooks/useGame";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useRouter } from 'expo-router';
+export default function NewGameScreen() {
+  const { data: players, isLoading } = usePlayers();
+  const createGameMutation = useCreateGame();
+  const [selectedPlayerId, setSelectedPlayerId] = useState("");
+  const [team, setTeam] = useState("");
+  const [opponentTeam, setOpponentTeam] = useState("");
+  const [season, setSeason] = useState("");
+  const [level, setLevel] = useState("");
 
+  async function handleCreateGame() {
+    if (!selectedPlayerId) {
+      Alert.alert("Erreur","sélectionner un joueur");
+      return;
+    }
+    if (!team.trim()) {
+      Alert.alert("Erreur","saisir votre équipe");
+      return;
+    }
+    if (!opponentTeam.trim()) {
+      Alert.alert("Erreur","saisir l'équipe adverse");
+      return;
+    }
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+    try {
+      const gameRef =
+        await createGameMutation.mutateAsync({
+          playerId: selectedPlayerId,
+          team,
+          opponentTeam,
+          season,
+          level,
+          finalScore: "",
+          isFinished: false,
+          createdAt:
+            new Date().toISOString(),
+        });
+
+      router.push(
+        `/nouveau_match/game/${gameRef.id}`
+      );
+    } catch (error) {
+      Alert.alert(
+        "Erreur",
+        "Impossible de créer le match"
+      );
+    }
   }
-  if (Device.isDevice) {
+
+  if (isLoading) {
     return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
+      <View style={styles.center}>
+        <Text>Chargement...</Text>
+      </View>
     );
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>
+        Nouveau Match
+      </Text>
+      <Text style={styles.label}>
+        Sélection du joueur
+      </Text>
+      {players?.map((player) => (
+        <Pressable key={player.id} onPress={() =>setSelectedPlayerId(player.id)}
+          style={[styles.playerButton,selectedPlayerId === player.id &&styles.playerSelected,]}
+        >
+          <Text style={styles.playerText}>
+            {player.firstName}{" "}
+            {player.lastName}
+          </Text>
+        </Pressable>
+      ))}
+      <Text>Equipe</Text>
+      <TextInput
+        placeholder="Equipe"
+        value={team}
+        onChangeText={setTeam}
+        style={styles.input}
+      />
 
-export default function Newgame() {
-    const router= useRouter()
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <ThemedText type="title" style={styles.title}>
-            Nouveau match
-          </ThemedText>
-        </ThemedView>
-        <Button
-                      title="Accueil"
-                      color="#00BCE2"
-                      onPress={()=>router.push('/')}
-                  />
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-
-        </ThemedView>
-      </SafeAreaView>
-    </ThemedView>
+      <Text>Equipe adverse</Text>
+      <TextInput
+        placeholder="Equipe adverse"
+        value={opponentTeam}
+        onChangeText={setOpponentTeam}
+        style={styles.input}
+      />
+      <Text>Saison</Text>
+      <TextInput
+        placeholder="Saison"
+        value={season}
+        onChangeText={setSeason}
+        style={styles.input}
+      />
+      <Text>Niveau</Text>
+      <TextInput
+        placeholder="Niveau"
+        value={level}
+        onChangeText={setLevel}
+        style={styles.input}
+      />
+      <Pressable
+        style={styles.button}
+        onPress={handleCreateGame}
+        disabled={
+          createGameMutation.isPending
+        }
+      >
+        <Text style={styles.buttonText}>
+          {createGameMutation.isPending
+            ? "Création..."
+            : "Lancer le match"}
+        </Text>
+      </Pressable>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    padding: 20,
   },
-  safeArea: {
+
+  center: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
+
   title: {
-    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
   },
-  code: {
-    textTransform: 'uppercase',
+
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  playerButton: {
+    backgroundColor: "#e0e0e0",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+
+  playerSelected: {
+    backgroundColor: "#00BCD4",
+  },
+
+  playerText: {
+    color: "#000",
+    fontSize: 16,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+
+  button: {
+    backgroundColor: "#00BCD4",
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

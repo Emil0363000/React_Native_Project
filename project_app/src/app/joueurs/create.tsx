@@ -23,12 +23,10 @@ export default function CreatePlayerScreen() {
         firstName,
         lastName,
         position,
-
         age: Number(age) || 0,
         height: Number(height) || 0,
         weight: Number(weight) || 0,
       });
-
       router.replace("/joueurs");
     } catch (error) {
       Alert.alert("Erreur", "Impossible de créer le joueur");
@@ -38,62 +36,30 @@ export default function CreatePlayerScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Créer un joueur</Text>
+      <Text>Prénom</Text>
+      <TextInput placeholder="Prénom" value={firstName}onChangeText={setFirstName}style={styles.input}/>
 
-      <TextInput
-        placeholder="Prénom"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
-      />
+      <Text>Nom</Text>
+      <TextInput placeholder="Nom" value={lastName} onChangeText={setLastName}style={styles.input}/>
 
-      <TextInput
-        placeholder="Nom"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
+      <Text>Poste</Text>
+      <TextInput placeholder="Poste" value={position} onChangeText={setPosition}style={styles.input}/>
 
-      <TextInput
-        placeholder="Poste"
-        value={position}
-        onChangeText={setPosition}
-        style={styles.input}
-      />
+      <Text>Age</Text>
+      <TextInput placeholder="Age" keyboardType="numeric"value={age} onChangeText={setAge} style={styles.input}/>
 
-      <TextInput
-        placeholder="Age"
-        keyboardType="numeric"
-        value={age}
-        onChangeText={setAge}
-        style={styles.input}
-      />
+      <Text>Taille</Text>
+      <TextInput placeholder="Taille en cm" keyboardType="numeric" value={height} onChangeText={setHeight}style={styles.input}/>
 
-      <TextInput
-        placeholder="Taille"
-        keyboardType="numeric"
-        value={height}
-        onChangeText={setHeight}
-        style={styles.input}
-      />
+      <Text>Poids</Text>
+      <TextInput placeholder="Poids en kg" keyboardType="numeric" value={weight} onChangeText={setWeight}style={styles.input}/>
 
-      <TextInput
-        placeholder="Poids"
-        keyboardType="numeric"
-        value={weight}
-        onChangeText={setWeight}
-        style={styles.input}
-      />
-
-      <Pressable
-        style={styles.button}
-        onPress={handleSubmit}
-      >
+      <Pressable style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>
           Créer
         </Text>
       </Pressable>
     </View>
-
   );
 }
 

@@ -1,18 +1,8 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
-
+import {addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc,} from "firebase/firestore";
 import { db } from "./firebase";
 import { Player } from "../types/player";
 
 const playersCollection = collection(db, "players");
-
 export type CreatePlayerInput =Omit<Player,'id' |'createdAt'>
 
 export async function getPlayers(): Promise<Player[]> {

@@ -1,168 +1,110 @@
-import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Modal,
-  TextInput,
-} from "react-native";
-import { Button } from "react-native";
+import {View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator,} from "react-native";
+import { router } from "expo-router";
+import { useGames } from "@/hooks/useGame";
+import { usePlayers } from "@/hooks/usePlayer";
 
-type Player = {
-  id: number;
-  name: string;
-};
-
-const mockPlayers: Player[] = [
-  { id: 1, name: "Match1" },
-  { id: 2, name: "Match2" },
-  { id: 3, name: "Match3" },
-  { id: 4, name: "Match4" },
-  { id: 5, name: "Match4" },
-  { id: 6, name: "Match5" },
-];
-
-export default function ListeJoueur() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newName, setNewName] = useState("");
-
-  useEffect(() => {
-    // BDD
-    setPlayers(mockPlayers);
-  }, []);
-
-  function handleAdd() {
-    if (!newName.trim()) return;
-    setPlayers((prev) => [
-      ...prev,
-      { id: prev.length + 1, name: newName.trim() },
-    ]);
-    setNewName("");
-    setShowModal(false);
-  }
-  const router=useRouter()
-
-  return (
-    <View style={styles.page}>
-      <View style={styles.topBar}>
-        <View style={{ flex: 1 }} />
+export default function HistoryScreen() {
+  const { data: games, isLoading } = useGames();
+  const { data: players } = usePlayers();
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator />
       </View>
-      <Button
-              title="Accueil"
-              color="#00BCE2"
-              onPress={()=>router.push('/')}
-          />
-      
-
-      <Text style={styles.title}>Consultation des matchs</Text>
-      
+    );
+  }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>
+        Historique des matchs
+      </Text>
       <FlatList
-        data={players}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.playerBtn}>
-            <Text style={styles.playerText}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
+        data={games?.filter((game)=>game.isFinished)}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          const player =
+            players?.find(
+              (p) =>
+                p.id === item.playerId
+            );
+          return (
+            <View style={styles.card}>
+              <Text style={styles.player}>
+                {player?.firstName}{" "}
+                {player?.lastName}
+              </Text>
+              <Text style={styles.text}>
+                vs {item.opponentTeam}
+              </Text>
+              <Text style={styles.score}>
+                {item.finalScore}
+              </Text>
+              <Pressable style={styles.button} onPress={() =>router.push(`/historique_match/${item.id}`)}>
+                <Text style={styles.buttonText}>
+                  Consulter
+                </Text>
+              </Pressable>
+            </View>
+          );
+        }}
       />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  page: {
+  container: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    paddingTop: 12,
+    padding: 16,
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingHorizontal: 16,
-    marginBottom: 4,
-  },
-  addBtn: {
-    backgroundColor: "#d0d0d0",
-    borderRadius: 4,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
-  addBtnText: {
-    fontSize: 15,
-    color: "#222",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 22,
-    fontWeight: "400",
-    marginVertical: 16,
-    color: "#000",
-  },
-  list: {
-    gap: 14,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  playerBtn: {
-    backgroundColor: "#00bcd4",
-    borderRadius: 4,
-    paddingVertical: 18,
-    alignItems: "center",
-  },
-  playerText: {
-    color: "#fff",
-    fontSize: 17,
-  },
-  overlay: {
+
+  center: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
-    alignItems: "center",
     justifyContent: "center",
-  },
-  modal: {
-    width: "85%",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 24,
-    gap: 16,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#111",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 15,
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
     alignItems: "center",
   },
-  cancelBtn: {
-    fontSize: 15,
-    color: "#666",
-    padding: 8,
+
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+    textAlign: "center",
   },
-  confirmBtn: {
-    backgroundColor: "#00bcd4",
-    borderRadius: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
-  confirmBtnText: {
+
+  player: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  text: {
     fontSize: 15,
+    marginTop: 4,
+  },
+
+  score: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 8,
+  },
+
+  button: {
+    marginTop: 12,
+    backgroundColor: "#00BCD4",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  buttonText: {
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "700",
   },
 });

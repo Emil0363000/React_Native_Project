@@ -13,9 +13,9 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: "bold" },
         }}
       >
-        <Stack.Screen name="index" options={{ title: "🔢 Compteur" }} />
-        <Stack.Screen name="history" options={{ title: "📋 Historique" }} />
-        <Stack.Screen name="[id]" options={{ title: "🔎 Détail" }} />
+        <Stack.Screen name="index" options={{ title: "App_stats" }} />
+        <Stack.Screen name="history" options={{ title: " Historique" }} />
+        <Stack.Screen name="[id]" options={{ title: " Détail" }} />
       </Stack>
     </QueryClientProvider>
   );
