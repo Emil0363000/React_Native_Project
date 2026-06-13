@@ -2,12 +2,14 @@ import { useState } from "react";
 import { View, Text, TextInput, Pressable, Alert, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { useCreatePlayer } from "@/hooks/usePlayer";
+import { POSITIONS } from "@/constants/player";
+import { Picker } from "@react-native-picker/picker";
 
 export default function CreatePlayerScreen() {
   const createPlayerMutation = useCreatePlayer();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [position, setPosition] = useState("");
+  const [position, setPosition] = useState(POSITIONS[0]); 
   const [age, setAge] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
@@ -17,7 +19,6 @@ export default function CreatePlayerScreen() {
       Alert.alert("Erreur", "Nom et prénom obligatoires");
       return;
     }
-
     try {
       await createPlayerMutation.mutateAsync({
         firstName,
@@ -43,7 +44,15 @@ export default function CreatePlayerScreen() {
       <TextInput placeholder="Nom" value={lastName} onChangeText={setLastName}style={styles.input}/>
 
       <Text>Poste</Text>
-      <TextInput placeholder="Poste" value={position} onChangeText={setPosition}style={styles.input}/>
+      <Picker selectedValue={position} onValueChange={setPosition}>
+        {POSITIONS.map((p) => (
+          <Picker.Item
+            key={p}
+            label={p}
+            value={p}
+          />
+        ))}
+      </Picker>
 
       <Text>Age</Text>
       <TextInput placeholder="Age" keyboardType="numeric"value={age} onChangeText={setAge} style={styles.input}/>

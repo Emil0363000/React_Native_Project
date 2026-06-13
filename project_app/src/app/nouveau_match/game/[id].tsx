@@ -26,7 +26,8 @@ export default function GameScreen() {
     foulsCommitted: 0,
     foulsDrawn: 0,
   });
-  const [finalScore, setFinalScore] = useState("");
+  const [teamScore,setTeamScore] = useState("");
+  const [opponentScore,setOpponentScore]= useState("");
   const updateGameMutation = useUpdateGame();
   async function handleEndGame() {
   try {
@@ -34,7 +35,8 @@ export default function GameScreen() {
       id: id as string,
       data: {
         stats,
-        finalScore,
+        teamScore: Number(teamScore),
+        opponentScore: Number(opponentScore),
         isFinished:true,
       },
     });
@@ -145,9 +147,11 @@ export default function GameScreen() {
             <StatButton label="Faute commise" value={stats.foulsCommitted}
               onAdd={() =>increment("foulsCommitted")}onRemove={() =>decrement("foulsCommitted")}/>
           </Section>
-          
-          <TextInput value={finalScore} onChangeText={setFinalScore} placeholder="Score final (ex: 76-68)"style={styles.input}/>
 
+          <TextInput style={styles.summaryText} placeholder="Score équipe" keyboardType="numeric" value={teamScore} onChangeText={setTeamScore}/>
+          <TextInput style={styles.summaryText} placeholder="Score adversaire"  keyboardType="numeric"  onChangeText={setOpponentScore}/>
+          
+          
           <Pressable style={styles.endBtn} onPress={handleEndGame}>
             <Text style={styles.endText}>
               Fin de match

@@ -28,7 +28,10 @@ export default function MatchDetailsScreen() {
         {game.team} vs {game.opponentTeam}
       </Text>
       <Text style={styles.score}>
-        Score final : {game.finalScore}
+        Score final : 
+        {game.teamScore}
+        -
+        {game.opponentScore}
       </Text>
 
       <View style={styles.summary}>

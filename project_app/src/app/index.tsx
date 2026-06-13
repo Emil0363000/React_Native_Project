@@ -1,100 +1,101 @@
-import * as Device from 'expo-device';
-import {Button, Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import {useRouter} from 'expo-router';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { Pressable, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 
 export default function HomeScreen() {
-  const router=useRouter();
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <ThemedText type="title" style={styles.title}>
-            Welcome to our app stats
-          </ThemedText>
-        </ThemedView>
+  const router = useRouter();
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <Button
-              title="Nouveau match"
-              color="#00BCE2"
-              onPress={()=>router.push('/nouveau_match')}
-          />
-          <Button
-              title="Historique match"
-              color="#00BCE2"
-              onPress={()=>router.push('/historique_match')}
-          />
-          <Button
-              title="Joueurs"
-              color="#00BCE2"
-              onPress={()=>router.push('/joueurs')}
-          />
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ThemedView style={styles.container}>
+        <ThemedText type="title" style={styles.title}>
+          Basket Stats
+        </ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Suivi des statistiques de match
+        </ThemedText>
+        <ThemedView style={styles.menuContainer}>
+          <Pressable style={styles.menuButton} onPress={() => router.push("/nouveau_match")}
+          >
+            <ThemedText style={styles.menuText}>
+              Nouveau match
+            </ThemedText>
+          </Pressable>
+          <Pressable style={styles.menuButton}  onPress={() => router.push("/historique_match")}
+          >
+            <ThemedText style={styles.menuText}>
+              Historique matchs
+            </ThemedText>
+          </Pressable>
+          <Pressable  style={styles.menuButton}  onPress={() => router.push("/joueurs")}
+          >
+            <ThemedText style={styles.menuText}>
+              Joueurs
+            </ThemedText>
+          </Pressable>
         </ThemedView>
-      </SafeAreaView>
-    </ThemedView>
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+
+  container: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    justifyContent: "center",
+    paddingHorizontal: 24,
   },
+
   title: {
-    textAlign: 'center',
+    textAlign: "center",
+    marginBottom: 8,
+    fontSize: 34,
   },
-  code: {
-    textTransform: 'uppercase',
+
+  subtitle: {
+    textAlign: "center",
+    opacity: 0.7,
+    marginBottom: 40,
+    fontSize: 16,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  menuContainer: {
+    gap: 16,
+  },
+
+  menuButton: {
+    backgroundColor: "#00BCD4",
+    paddingVertical: 20,
+    borderRadius: 16,
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+
+    elevation: 4,
+  },
+
+  menuText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  version: {
+    textAlign: "center",
+    marginTop: 40,
+    opacity: 0.5,
+    fontSize: 14,
   },
 });

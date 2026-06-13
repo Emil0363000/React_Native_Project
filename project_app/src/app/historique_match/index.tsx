@@ -37,7 +37,9 @@ export default function HistoryScreen() {
                 vs {item.opponentTeam}
               </Text>
               <Text style={styles.score}>
-                {item.finalScore}
+                {item.teamScore}
+                {"-"}
+                {item.opponentScore}
               </Text>
               <Pressable style={styles.button} onPress={() =>router.push(`/historique_match/${item.id}`)}>
                 <Text style={styles.buttonText}>

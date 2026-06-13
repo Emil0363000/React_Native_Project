@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, Alert, StyleSheet, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { usePlayer, useUpdatePlayer } from "@/hooks/usePlayer";
+import { POSITIONS } from "@/constants/player";
+import { Picker } from "@react-native-picker/picker";
 
 export default function EditPlayerScreen() {
   const { id } = useLocalSearchParams();
@@ -9,7 +11,7 @@ export default function EditPlayerScreen() {
   const updateMutation = useUpdatePlayer();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [position, setPosition] = useState("");
+  const [position, setPosition] = useState(POSITIONS[0]);
   const [age, setAge] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
@@ -58,7 +60,15 @@ export default function EditPlayerScreen() {
       <TextInput value={lastName} onChangeText={setLastName}placeholder="Nom"style={styles.input}/>
 
       <Text>Poste</Text>
-      <TextInput value={position} onChangeText={setPosition}placeholder="Poste"style={styles.input}/>
+      <Picker selectedValue={position} onValueChange={setPosition}>
+        {POSITIONS.map((p) => (
+          <Picker.Item
+            key={p}
+            label={p}
+            value={p}
+          />
+        ))}
+      </Picker>
 
       <Text>Age</Text>
       <TextInput value={age}onChangeText={setAge}keyboardType="numeric"placeholder="Age"style={styles.input}/>
