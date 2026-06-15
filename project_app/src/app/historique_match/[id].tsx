@@ -1,10 +1,13 @@
-import {View, Text, StyleSheet, ActivityIndicator, ScrollView,} from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import { useGame } from "@/hooks/useGame";
+import {View, Text, StyleSheet, ActivityIndicator, ScrollView,Pressable} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useDeleteGame, useGame } from "@/hooks/useGame";
 import { usePlayer } from "@/hooks/usePlayer";
+import { router } from "expo-router";
+import { Button } from "expo-router/build/react-navigation";
 
 export default function MatchDetailsScreen() {
   const { id } = useLocalSearchParams();
+  const deleteMutation=useDeleteGame();
   const { data: game, isLoading } = useGame(id as string);
   const { data: player } = usePlayer(game?.playerId ?? "");
   if (isLoading || !game) {
@@ -14,6 +17,7 @@ export default function MatchDetailsScreen() {
       </View>
     );
   }
+  
 
   const points = game.stats.twoPtMade * 2 + game.stats.threePtMade * 3 + game.stats.ftMade;
   const rebounds = game.stats.offRebounds + game.stats.defRebounds;
@@ -74,6 +78,9 @@ export default function MatchDetailsScreen() {
       <StatRow label="Pertes de balle" value={game.stats.turnovers}/>
       <StatRow label="Fautes commises" value={game.stats.foulsCommitted}/>
       <StatRow label="Fautes provoquées" value={game.stats.foulsDrawn}/>
+      <Pressable style={styles.deleteButton}onPress={() => {deleteMutation.mutate(game.id, { onSuccess: () => router.replace("/historique_match"),});}}>
+        <Text>Supprimer</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -95,6 +102,15 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+
+  deleteButton: {
+  marginTop: 32,
+  marginHorizontal: 16,
+  backgroundColor: "#FF3B30",
+  paddingVertical: 14,
+  borderRadius: 12,
+  alignItems: "center",
+},
 
   center: {
     flex: 1,

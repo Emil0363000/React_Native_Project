@@ -87,19 +87,19 @@ export default function GameScreen() {
         <ThemedText type="title" style={styles.title}>
           Match en cours
         </ThemedText>
-        <Pressable style={styles.backBtn} onPress={() => router.back()}
+        <Pressable style={styles.backBtn} onPress={() => router.replace("/nouveau_match")}
         >
           <Text style={styles.backText}> Retour</Text>
         </Pressable>
 
         <ThemedView style={styles.summary}>
-          <Text style={styles.summaryText}>
+          <Text style={[styles.summaryText, { color: "#fff" }]}>
             Points : {totalPoints}
           </Text>
-          <Text style={styles.summaryText}>
+          <Text style={[styles.summaryText, { color: "#fff" }]}>
             Rebonds : {rebounds}
           </Text>
-          <Text style={styles.summaryText}>
+          <Text style={[styles.summaryText, { color: "#fff" }]}>
             Passes : {stats.assists}
           </Text>
         </ThemedView>
@@ -148,8 +148,8 @@ export default function GameScreen() {
               onAdd={() =>increment("foulsCommitted")}onRemove={() =>decrement("foulsCommitted")}/>
           </Section>
 
-          <TextInput style={styles.summaryText} placeholder="Score équipe" keyboardType="numeric" value={teamScore} onChangeText={setTeamScore}/>
-          <TextInput style={styles.summaryText} placeholder="Score adversaire"  keyboardType="numeric"  onChangeText={setOpponentScore}/>
+          <TextInput style={styles.scoreInput} placeholder="Score équipe" keyboardType="numeric" value={teamScore} onChangeText={setTeamScore}/>
+          <TextInput style={styles.scoreInput} placeholder="Score adversaire"  keyboardType="numeric" value={opponentScore} onChangeText={setOpponentScore}/>
           
           
           <Pressable style={styles.endBtn} onPress={handleEndGame}>
@@ -193,6 +193,16 @@ const styles = StyleSheet.create({
   marginTop: 20,
   color: "#ffffff"
 },
+scoreInput: {
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 8,
+  padding: 12,
+  marginTop: 12,
+  fontSize: 16,
+  color: "#000", 
+  backgroundColor: "#fff", 
+},
 
   safeArea: {
     flex: 1,
@@ -217,13 +227,18 @@ const styles = StyleSheet.create({
 
   summary: {
     paddingHorizontal: 16,
-    paddingBottom: 10,
-  },
-
+    paddingVertical: 12,
+    backgroundColor: "#00BCE2", 
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-around",
+},
   summaryText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ffffff"
+  
   },
 
   scroll: {
