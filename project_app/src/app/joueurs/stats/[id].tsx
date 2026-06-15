@@ -10,7 +10,7 @@ export default function PlayerStatsScreen() {
   if (isLoading) {
     return <ActivityIndicator />;
   }
-  const finishedGames = games?.filter((g) => g.finalScore) ?? [];
+  const finishedGames = games?.filter((g) => g.teamScore) ?? [];
   const gamesCount = finishedGames.length;
   const totalPoints =finishedGames.reduce(
       (acc, game) =>
@@ -105,9 +105,6 @@ export default function PlayerStatsScreen() {
               <Text>
                 {pts} pts • {reb} reb •{" "}
                 {item.stats.assists} ast
-              </Text>
-              <Text>
-                {item.finalScore}
               </Text>
             </View>
           );
